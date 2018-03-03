@@ -14,6 +14,18 @@ void transpose(int Dimensions,int A[Dimensions][Dimensions],int rowStart,int col
 	}
 }
 
+void swap_quad(int Dimensions, int A[Dimensions][Dimensions])
+{
+	int quadSize = Dimensions/2;
+	for(int n=0;n<quadSize;n++)
+	{
+		for(int m=0;m<quadSize;m++)
+		{
+			swap_int(&A[n][quadSize+m],&A[quadSize+n][m]);
+		}
+	}
+}
+
 #define Dimensions 4
 
 int main()
@@ -47,7 +59,7 @@ int main()
 	transpose(Dimensions,A,0,Q,Q);//B
 	transpose(Dimensions,A,Q,0,Q);//C
 	transpose(Dimensions,A,Q,Q,Q);//D
-	//swap B and C
+	swap_quad(Dimensions,A);//swap B and C
 	printf("\n Transpose matrix \n");
 	for(int i=0;i<Dimensions;i++)
 	{
