@@ -34,32 +34,22 @@ void swapQuad(int Dimensions, int *A)
 struct Matrix
 {
 	int Dimensions;
-	int* A;
+	int *A;
 	int rowStart;
 	int colStart;
 };
 
-void* transposeMatrix(void* argument) 
+void* transposeMatrix(void* argument)
 {
 	struct Matrix *arg = (struct Matrix *)argument;
 	int Dimensions = arg->Dimensions;
 	int *A = arg->A;
 	int rowStart = arg->rowStart;
 	int colStart = arg->colStart;
-	transposeQuad(Dimensions,A,rowStart,colStart);
+	transposeQuad(Dimensions,(int *)arg->A,rowStart,colStart);
 	return NULL;
 }
 
-void* perform_work(void* argument) 
-{
-	int passed_in_value;
-
-	passed_in_value = *((int*) argument);
-	printf("Hello World! It's me, thread with argument %d!\n", passed_in_value);
-
-	return NULL;
-}
- 
 int main(int argc, char** argv) 
 {
 	int Dimensions=4;
@@ -122,6 +112,16 @@ int main(int argc, char** argv)
 		result_code = pthread_join(threads[index], NULL);
 		assert(!result_code);
 		printf("In main: thread %d has completed\n", index);
+		
+		printf("\n Progress \n");
+		for(int i=0;i<Dimensions;i++)
+		{
+			for(int j=0;j<Dimensions;j++)
+			{
+				printf("%d \t", m.A[i*Dimensions+j]);
+			}
+			printf("\n");
+		}
 	}
 	swapQuad(Dimensions,m.A);//swap B and C
 	printf("\n Transpose matrix \n");
@@ -133,5 +133,6 @@ int main(int argc, char** argv)
 		}
 		printf("\n");
 	}
+	free(m.A);
 	exit(EXIT_SUCCESS);
 }
