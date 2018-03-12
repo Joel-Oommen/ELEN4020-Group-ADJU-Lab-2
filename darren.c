@@ -5,7 +5,9 @@
 
 void swap_int(int *x, int *y) {int tmp = *x;*x=*y;*y=tmp;}
 
-void populateArray(int *A, int dimension)
+
+
+void populateArray(int **A, int dimension)
 {
 
 	int ELEM = dimension;
@@ -13,13 +15,13 @@ void populateArray(int *A, int dimension)
 	{
 		for(int j=0;j<ELEM;j++)
 		{
-			A[i*ELEM+j]=i*ELEM+j;
+			A[i][j]=i*ELEM+j;
 		}
 	}
 }
 
 
-void printArray(int *A, int dimension)
+void printArray(int **A, int dimension)
 {
 
 	int ELEM = dimension;
@@ -27,180 +29,187 @@ void printArray(int *A, int dimension)
 	{
 		for(int j=0;j<ELEM;j++)
 		{
-			printf("%d \t", A[i*ELEM+j]);
+			printf("%d \t", A[i][j]);
 		}
 		printf("\n");
 	}
 }
 
-void linearTranspose(int *A, int dimension)
+void linearTranspose(int **A, int dimension)
 {
 	int ELEM = dimension;
-	for(int n=0;n<ELEM;n++)
+	int tmp;
+	for(int i=0;i<ELEM;i++)
 	{
 		
-		for(int m=n+1;m<ELEM;m++)
+		for(int j=i+1;j<ELEM;j++)
 		{
-			//printf("%d \n",m);			
-			swap_int(&A[n*ELEM+m],&A[m*ELEM+n]);
+			tmp = A[i][j];
+               		A[i][j] = A[j][i];
+                	A[j][i] = tmp;
 					
 		}
 	}
 }
 
-void parallelTranspose(int *A, int dimension,int numThreads)
+void parallelTranspose(int **A, int dimension,int numThreads)
 {
 	int ELEM =dimension;
-	int h=ELEM-1;
-	int i=0;
-	int k=0;
-	int j=1;
-	int looplimit = 0.5*(ELEM*ELEM)-0.5*ELEM;
-	
-	int n;
-	
-
-
-	#pragma omp parallel for num_threads(numThreads) shared(A) shared(i,j) schedule(dynamic,1)
-		for ( n=0;n<looplimit;n++)
-		{	
-		
-			if (k!=0)
+	int i, j,tmp;
+    	#pragma omp parallel shared(A) private( i, j) num_threads(numThreads)
+    	{
+        	#pragma omp for schedule(dynamic,1)  nowait
+        	for (i = 0; i < ELEM - 1; i++) 
+		{
+            		for (j = i + 1; j < ELEM; j++) 
 			{
-				if (k%h==0){i++; h--;k=0;j=i+1;}
-			
-			} 
-			swap_int(&A[i*ELEM+j],&A[j*ELEM+i]);
-		
-			j++;
-			if (k<=h){k++;}
-			
-		}
+                		tmp = A[i][j];
+               		 	A[i][j] = A[j][i];
+                		A[j][i] = tmp;
+            		}
+        	}
+    	}
+
+
+
+
 }
 
 
-#define ELEM 10
+#define ELEM 20000
+
 
 int main()
 {	
 
-	double elmn=ELEM;
-	int *A = (int *)malloc(elmn*elmn*sizeof(int));
-	
-
 	// CREATE AND PRINT ORIGINAL MATRIX;
+	double elmn=ELEM;
+	int ** A;
+    	A = malloc(elmn * sizeof(int *));
+	for(int i = 0; i < ELEM; i++)
+	{
+        	A[i] = (int *)malloc(ELEM * sizeof(int));
+	}	
+	
 	// If you wish to print the matrix to test that the transpose works 
 	// you uncomment the print function below.
 
 
 	populateArray(A,ELEM);
 
-	printf("\n Original matrix \n");
-	printArray(A,ELEM);
+	//printf("\n Original matrix \n");
+	//printArray(A,ELEM);
 
 
 
 	// LINEAR TRANSPOSE
 	// THIS IS WHERE THE LINEAR TRANSPOSE TAKES PLACE.
 
-	clock_t starttime,stoptime,starttime2,stoptime2;
-
-	starttime =clock();
-
-	linearTranspose(A,ELEM);
-	
-	stoptime =clock();
-	
-	double diff = (double)(stoptime-starttime)/1000000;
+	double starttime = omp_get_wtime();
+    	linearTranspose(A,ELEM);
+	double diff = omp_get_wtime() - starttime;
+	printf("Linear %c %c: %f\n", ' ',' ', diff);
 		
 
 
 	// TO PRINT THE TRANSPOSED MATRIX UNCOMMENT THE PRINTF'S BELOW
 
 
-	printf("\n 1st Transposed matrix \n");
-	printArray(A,ELEM);
-
-	 
-
+	//printf("\n 1st Transposed matrix \n");
+	//printArray(A,ELEM);
+	
 
 	// PARALLEL TRANSPOSE
 	// THIS IS WHERE THE PARALLEL TRANSPOSE TAKES PLACE.
 
 
-	// 1  THREAD
-	
-	starttime2 =clock();
-
-	parallelTranspose(A,ELEM,1);
-
-	stoptime2 =clock();	
-	double diff2 = (double)(stoptime2-starttime2)/1000000;
-	printf("%s %f \n","Linear ",diff);
-	printf("%s %f \n","Parallel1 ",diff2);
-	
-	// TO PRINT THE TRANSPOSED MATRIX UNCOMMENT THE PRINTF'S BELOW
-
-	printf("\n 2nd Transposed matrix \n");
-	printArray(A,ELEM);
-	
-
 	// 4  THREADS
 
-	starttime2 =clock();
-
+	starttime = omp_get_wtime();
 	parallelTranspose(A,ELEM,4);
-
-	stoptime2 =clock();	
-	diff2 = (double)(stoptime2-starttime2)/1000000;
+	diff = omp_get_wtime() - starttime;
+	printf("Parallel (4 Threads): %c %c: %f\n", ' ',' ', diff);
+		
 	
-	printf("%s %f \n","Parallel4 ",diff2);
+	// TO PRINT THE TRANSPOSED MATRIX UNCOMMENT THE PRINTF'S BELOW
 
+	//printf("\n 2nd Transposed matrix \n");
+	//printArray(A,ELEM);
+
+
+	// 8  THREADS
+
+
+	starttime = omp_get_wtime();
+	parallelTranspose(A,ELEM,8);
+	diff = omp_get_wtime() - starttime;
+	printf("Parallel (8 Threads): %c %c: %f\n", ' ',' ', diff);
 
 	// TO PRINT THE TRANSPOSED MATRIX UNCOMMENT THE PRINTF'S BELOW
 
 
-	printf("\n 3rd Transposed matrix \n");
-	printArray(A,ELEM);
+	//printf("\n 3rd Transposed matrix \n");
+	//printArray(A,ELEM);
+
+
+	// 16  THREADS
+
+	
+	starttime = omp_get_wtime();
+	parallelTranspose(A,ELEM,16);
+	diff = omp_get_wtime() - starttime;
+	printf("Parallel (16 Threads): %c %c: %f\n", ' ',' ', diff);
+
+	// TO PRINT THE TRANSPOSED MATRIX UNCOMMENT THE PRINTF'S BELOW
+	
+	//printf("\n 4th Transposed matrix \n");
+	//printArray(A,ELEM);
+
+
+
+
+	// 64  THREADS
+	
+	
+	starttime = omp_get_wtime();
+	parallelTranspose(A,ELEM,64);
+	diff = omp_get_wtime() - starttime;
+	printf("Parallel (64 Threads): %c %c: %f\n", ' ',' ', diff);
+
+	
+	// TO PRINT THE TRANSPOSED MATRIX UNCOMMENT THE PRINTF'S BELOW
+	
+	//printf("\n 5th Transposed matrix \n");
+	//printArray(A,ELEM);
+
 
 	// 128  THREADS
-
-	starttime2 =clock();
-
+	
+	
+	starttime = omp_get_wtime();
 	parallelTranspose(A,ELEM,128);
-	
-	stoptime2 =clock();	
-	diff2 = (double)(stoptime2-starttime2)/1000000;
-	
-	printf("%s %f \n","Parallel128 ",diff2);
+	diff = omp_get_wtime() - starttime;
+	printf("Parallel (128 Threads): %c %c: %f\n", ' ',' ', diff);
 
-
+	
 	// TO PRINT THE TRANSPOSED MATRIX UNCOMMENT THE PRINTF'S BELOW
 	
-	printf("\n 4th Transposed matrix \n");
-	printArray(A,ELEM);
+	//printf("\n 6th Transposed matrix \n");
+	//printArray(A,ELEM);
 
-	// 1024  THREADS
-
-
-
-	starttime2 =clock();
-
-	parallelTranspose(A,ELEM,1024);
+	// 8192  THREADS
 	
-	stoptime2 =clock();	
-	diff2 = (double)(stoptime2-starttime2)/1000000;
 	
-	printf("%s %f \n","Parallel1024 ",diff2);
+	starttime = omp_get_wtime();
+	parallelTranspose(A,ELEM,10000);
+	diff = omp_get_wtime() - starttime;
+	printf("Parallel (128 Threads): %c %c: %f\n", ' ',' ', diff);
 
-
+	
 	// TO PRINT THE TRANSPOSED MATRIX UNCOMMENT THE PRINTF'S BELOW
 	
-	printf("\n 5th Transposed matrix \n");
-	printArray(A,ELEM);
-
-
-
+	//printf("\n 6th Transposed matrix \n");
+	//printArray(A,ELEM);
 
 	free(A);
 
