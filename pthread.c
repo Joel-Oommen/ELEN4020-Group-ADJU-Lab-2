@@ -42,11 +42,9 @@ struct Matrix
 void* transposeMatrix(void* argument)
 {
 	struct Matrix *arg = (struct Matrix *)argument;
-	int Dimensions = arg->Dimensions;
-	int *A = arg->A;
 	int rowStart = arg->rowStart;
 	int colStart = arg->colStart;
-	transposeQuad(Dimensions,(int *)arg->A,rowStart,colStart);
+	transposeQuad(arg->Dimensions,(int *)arg->A,rowStart,colStart);
 	return NULL;
 }
 
@@ -54,17 +52,15 @@ int main(int argc, char** argv)
 {
 	int Dimensions=4;
 	double elmn=Dimensions*Dimensions;
-	struct Matrix m;
-	m.Dimensions = Dimensions;
-	m.A = (int *)malloc(elmn*sizeof(int));
+	int *A = (int *)malloc(elmn*sizeof(int));
 	int c=0;
 	printf("\n Original matrix \n");
 	for(int i=0;i<Dimensions;i++)
 	{
 		for(int j=0;j<Dimensions;j++)
 		{
-			m.A[i*Dimensions+j]=++c;
-			printf("%d \t", m.A[i*Dimensions+j]);
+			A[i*Dimensions+j]=++c;
+			printf("%d \t", A[i*Dimensions+j]);
 		}
 		printf("\n");
 	}
@@ -72,67 +68,83 @@ int main(int argc, char** argv)
 	int result_code;
 	unsigned index=0;
 //______________________________________________________________________________________
-	m.rowStart = 0;
-	m.colStart = 0;	
-	printf("In main: creating thread %d\n", index);
-	result_code = pthread_create(&threads[index], NULL, transposeMatrix, &m);
-	assert(!result_code);
-	index++;
-//______________________________________________________________________________________	
+//Defining arguments	
 	int Q = Dimensions/2;
-	m.rowStart = 0;
-	m.colStart = Q;
-	
+//******************************
+	struct Matrix m1;
+	m1.Dimensions = Dimensions;
+	m1.A = (int *)A;
+	m1.rowStart = 0;
+	m1.colStart = 0;
+//******************************
+	struct Matrix m2;
+	m2.Dimensions = Dimensions;
+	m2.A = (int *)A;	
+	m2.rowStart = 0;
+	m2.colStart = Q;
+//******************************
+	struct Matrix m3;
+	m3.Dimensions = Dimensions;
+	m3.A = (int *)A;
+	m3.rowStart = Q;
+	m3.colStart = 0;
+//******************************
+	struct Matrix m4;
+	m4.Dimensions = Dimensions;
+	m4.A = (int *)A;
+	m4.rowStart = Q;
+	m4.colStart = Q;
+//******************************
+//______________________________________________________________________________________
 	printf("In main: creating thread %d\n", index);
-	result_code = pthread_create(&threads[index], NULL, transposeMatrix, &m);
-	assert(!result_code);
-	index++;
-//______________________________________________________________________________________	
-	m.rowStart = Q;
-	m.colStart = 0;
-	
-	printf("In main: creating thread %d\n", index);
-	result_code = pthread_create(&threads[index], NULL, transposeMatrix, &m);
+	result_code = pthread_create(&threads[index], NULL, transposeMatrix, &m1);
 	assert(!result_code);
 	index++;
 //______________________________________________________________________________________
-	m.rowStart = Q;
-	m.colStart = Q;
-	
 	printf("In main: creating thread %d\n", index);
-	result_code = pthread_create(&threads[index], NULL, transposeMatrix, &m);
+	result_code = pthread_create(&threads[index], NULL, transposeMatrix, &m2);
 	assert(!result_code);
 	index++;
-//______________________________________________________________________________________	
+//______________________________________________________________________________________
+	printf("In main: creating thread %d\n", index);
+	result_code = pthread_create(&threads[index], NULL, transposeMatrix, &m3);
+	assert(!result_code);
+	index++;
+//______________________________________________________________________________________
+	printf("In main: creating thread %d\n", index);
+	result_code = pthread_create(&threads[index], NULL, transposeMatrix, &m4);
+	assert(!result_code);
+	index++;
+//______________________________________________________________________________________
 	
 	// wait for each thread to complete
-	for (index = 0; index < NUM_THREADS; ++index)
+	for (int idx = 0; idx < NUM_THREADS ; idx++)
 	{
 		// block until thread 'index' completes
-		result_code = pthread_join(threads[index], NULL);
+		result_code = pthread_join(threads[idx], NULL);
 		assert(!result_code);
-		printf("In main: thread %d has completed\n", index);
+		printf("In main: thread %d has completed\n", idx);
 		
 		printf("\n Progress \n");
 		for(int i=0;i<Dimensions;i++)
 		{
 			for(int j=0;j<Dimensions;j++)
 			{
-				printf("%d \t", m.A[i*Dimensions+j]);
+				printf("%d \t", A[i*Dimensions+j]);
 			}
 			printf("\n");
 		}
 	}
-	swapQuad(Dimensions,m.A);//swap B and C
+	swapQuad(Dimensions,A);//swap B and C
 	printf("\n Transpose matrix \n");
 	for(int i=0;i<Dimensions;i++)
 	{
 		for(int j=0;j<Dimensions;j++)
 		{
-			printf("%d \t", m.A[i*Dimensions+j]);
+			printf("%d \t",A[i*Dimensions+j]);
 		}
 		printf("\n");
 	}
-	free(m.A);
+	free(A);
 	exit(EXIT_SUCCESS);
 }
