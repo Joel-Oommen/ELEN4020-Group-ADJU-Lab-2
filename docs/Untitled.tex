@@ -1,0 +1,104 @@
+\documentclass[journal, a4paper]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage[justification=centering]{caption}
+
+\usepackage[left=18mm,right=18mm,top=17mm,bottom=18mm]{geometry}
+
+\setlength{\columnsep}{7mm}
+
+\usepackage{cleveref}
+
+\usepackage[siunitx]{circuitikz}
+
+\usepackage{siunitx}
+
+\usepackage{tikz}
+
+\usetikzlibrary{shapes, arrows}
+
+\usetikzlibrary{shapes.geometric, arrows}
+
+\usetikzlibrary{fit}
+\usepackage{multirow}
+\usetikzlibrary{scopes}
+
+\usepackage{cite}  
+\usepackage{graphicx}
+
+\usepackage{url}     
+\tikzstyle{start} = [circle, draw, centered, fill = white!20, minimum width= 8pt, inner sep= 10pt]
+\tikzstyle{decision} =[diamond, draw, fill=white!20, text width= 5em, text centered, node distance = 3cm, inner sep =0pt]
+\tikzstyle{common} =[diamond, draw, fill=white!20, text width= 0.5em, text centered, node distance = 3cm, inner sep= 0pt]
+
+\tikzstyle{operation} = [rectangle, draw, fill=white!20, text width = 5em, rounded corners, minimum height=4em ]
+
+\tikzstyle{line} = [draw, -latex']
+
+\tikzstyle{input} = [trapezium, draw, fill=white!20, text width= 4em, minimum height = 4em, trapezium  left angle =120, trapezium right angle = 60]
+
+\setlength\parindent{0pt}
+
+\begin{document}
+
+
+	\title{ELEN 4020 Lab 1}
+
+	\author{\small Uyanda Mphunga - 1168101 | Darren Blanckensee - 1147279 | 
+Ashraf Omar - 710435 | Amprayil Joel Oommen - 843463}
+
+	\maketitle
+
+\section{Introduction}
+The purpose of this lab was to expose the students to the concept of parallelism along with introducing the students to the openmp and pthread libraries so as to become familiar with when and how to use parallelism. The task was to create code that uses parallelism to transpose a matrix without using any additional space using first openmp and then pthreading. The code was to be run of several sized matrices and using different numbers of threads. The different matrix sizes are $128$x$128$, $1024$x$1024$ and $8192$x$8192$. The number of threads to be used are 4, 8, 16, 64 and 128. These are to be timed and compared so as to understand the behaviour of parallelism when applied to computing a matrix transpose. 
+
+
+\section{Open MP}
+\subsection{Initial Approach and Problems}
+\noindent
+Initially the matrix had been declared as a one dimensional array with elements being assigned using row-major ordering. The transpose was done in a nested for loop with the outer loop going from 0 to the number of rows - 1 and the inner loop going from whatever the outer loop is + 1 to the number of columns. This is not ideal for open mp's parallel for loop decomposition. It would be ideal to fuse the nested for loop into a single for loop which open mp would then parallelise. This was not possible as the students could not find a way to define both nested for loop variables when there is just one loop. This is easy to do when both loop variables start from 0 and go up to a given number but becomes difficult when loop variables are defined in terms of each other which was the case here. Therefore it was decided that it would be left as a nested for loop and that the array would be a 2D array. \\
+
+The collapse(2) command for collapsing nested for loops could not be used for the same reason that the loops could not be fused and therefore only one of the two loops in the nested for loop could be parallelised. It was determined that the best loop to parallelise was the outside loop (trial and error determined that this gave the best results). Dynamic scheduling was used with a chunk size of 1 such that each thread would work on the next available piece of data. The code was run using the various numbers of threads and on the different sized matrices and the times will be compared in the comparison section. 
+
+
+\section{Pthreads}
+
+\noindent
+
+%	\begin{figure}[hbtp!]
+%		\centering
+%		\includegraphics[scale = 1]{code.png}
+%		\caption{Excerpt code}
+%		\label {code}
+%	\end{figure}
+
+	%The result of Figure~\ref{code} is then multiplied with the array that 
+\section{Comparison}
+	
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[]
+\centering
+\caption{Time Comparison of OpenMP and Pthread}
+\label{my-label}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\multicolumn{2}{|l|}{\multirow{2}{*}{}} & \multicolumn{3}{l|}{Times}                      \\ \cline{3-5} 
+\multicolumn{2}{|l|}{}                  & 128 & 1024 & 8192 \\ \hline
+Pthread            & No. of Threads  &               &                &                \\ \hline
+\multirow{5}{*}{}  & 4                  &               &                &                \\ \cline{2-5} 
+                   & 8                  &               &                &                \\ \cline{2-5} 
+                   & 16                 &               &                &                \\ \cline{2-5} 
+                   & 64                 &               &                &                \\ \cline{2-5} 
+                   & 128                &               &                &                \\ \hline
+OpenMP             & 4                  &               &                &                \\ \hline
+\multirow{4}{*}{}  & 8                  &               &                &                \\ \cline{2-5} 
+                   & 16                 &               &                &                \\ \cline{2-5} 
+                   & 64                 &               &                &                \\ \cline{2-5} 
+                   & 128                &               &                &                \\ \hline
+\end{tabular}
+\end{table}
+	
+	
+\end{document}
