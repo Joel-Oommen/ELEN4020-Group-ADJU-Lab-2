@@ -1,0 +1,126 @@
+\documentclass[journal, a4paper]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage[justification=centering]{caption}
+
+\usepackage[left=18mm,right=18mm,top=17mm,bottom=18mm]{geometry}
+
+\setlength{\columnsep}{7mm}
+
+\usepackage{cleveref}
+
+\usepackage[siunitx]{circuitikz}
+
+\usepackage{siunitx}
+
+\usepackage{float}
+
+\usepackage{tikz}
+
+\usetikzlibrary{shapes, arrows}
+
+\usetikzlibrary{shapes.geometric, arrows}
+
+\usetikzlibrary{fit}
+\usepackage{multirow}
+\usetikzlibrary{scopes}
+
+\usepackage{cite}  
+\usepackage{graphicx}
+
+\usepackage{url}     
+\tikzstyle{start} = [circle, draw, centered, fill = white!20, minimum width= 8pt, inner sep= 10pt]
+\tikzstyle{decision} =[diamond, draw, fill=white!20, text width= 5em, text centered, node distance = 3cm, inner sep =0pt]
+\tikzstyle{common} =[diamond, draw, fill=white!20, text width= 0.5em, text centered, node distance = 3cm, inner sep= 0pt]
+
+\tikzstyle{operation} = [rectangle, draw, fill=white!20, text width = 5em, rounded corners, minimum height=4em ]
+
+\tikzstyle{line} = [draw, -latex']
+
+\tikzstyle{input} = [trapezium, draw, fill=white!20, text width= 4em, minimum height = 4em, trapezium  left angle =120, trapezium right angle = 60]
+
+\setlength\parindent{0pt}
+
+\begin{document}
+
+
+	\title{ELEN 4020 Lab 2: Matrix Transposition}
+
+	\author{\small Uyanda Mphunga - 1168101 | Darren Blanckensee - 1147279 | 
+Ashraf Omar - 710435 | Amprayil Joel Oommen - 843463}
+
+	\maketitle
+
+\section{Introduction}
+The purpose of this lab is to expose the students to the concept of parallelism, by introducing them to the parallel programming libraries of OpenMP and Pthread libraries. The task is to create code that uses the aforementioned libraries, to parallelize the process of transposing a matrix, without using any additional space. The code is to make use of different numbers of threads, which are to transpose a variety of square matrices (i.e. A[No][No]). The number of threads to be used are 4, 8, 16, 64 and 128, while the different matrix sizes that need to be tested, must be dimensioned as $128$x$128$, $1024$x$1024$ and $8192$x$8192$ respectively. The entire process of creating the threads and allowing them to transpose the matrix, is to be timed and compared; this will allow the students to understand the behaviour of parallelism when applied to computing a matrix transpose. 
+
+
+\section{OpenMP}
+\subsection{Initial Approach and Problems}
+\noindent
+Initially the matrix had been declared as a one dimensional array with elements being assigned using row-major ordering. The transpose was done in a nested for loop with the outer loop going from 0 to the number of rows - 1 and the inner loop going from whatever the outer loop is + 1 to the number of columns. This is not ideal for open mp's parallel for loop decomposition.\\
+
+
+ It would be ideal to fuse the nested for loop into a single for loop which Open MP would then parallelise. This was not possible as the students could not find a way to define both nested for loop variables when there is just one loop. This is easy to do when both loop variables start from 0 and go up to a given number but becomes difficult when loop variables are defined in terms of each other which was the case here. Therefore it was decided that it would be left as a nested for loop. \\
+
+The collapse(2) command for collapsing nested for loops could not be used for the same reason that the loops could not be fused and therefore only one of the two loops in the nested for loop could be parallelised. It was determined that the best loop to parallelise was the outside loop (trial and error determined that this gave the best results). \\
+
+Dynamic scheduling was used with a chunk size of 1 such that each thread would work on the next available piece of data. The code was run using the various numbers of threads and on the different sized matrices and the times will be compared in the comparison section. \\
+
+\subsection{Quality of Solution}
+The final solution is less complex in time and storage than the basic transpose method which makes a copy of the matrix and copies element (i,j) from the first array to element (j,i) of the second array. The methods used in this lab iterates through the upper diagonal and swaps using a temporary variable and therefore no extra memory is needed and you only iterate through less than half of the matrix. \\
+
+The linear and parallel methods both use the same transpose logic so as to make time comparisons. The code relies on the pragma omp parallel for compiler directive to handle the parallelisation. 
+
+\section{Pthreads}
+
+\noindent
+The PThread algorithm developed, makes use of similar logic to the algorithm used for OpenMP, namely: the algorithm takes a square matrix (with an even-numbered dimension $No$), iterates through the elements of the upper half of the matrix (above the main diagonal) and transposes them with the corresponding element in the lower half of the matrix (below the main diagonal). Mathematically, the process is described by an element A[i][j] = A[j][i] and vice versa. However, unlike conventional, single-thread implementations of a transposition algorithm, the algorithm developed makes use of multiple threads which collectively operate on subdivided portions of the original matrix.\\
+
+The algorithm does this, by making use of three functions, namely: $transposeMatrix$, $upperBound$ and $lowerBound$. Each thread created is defined to perform the definitions found in $transposeMatrix$, on particular subsections of the matrix. The subsections of the matrix are determined by the values returned by the functions $upperBound$ and $lowerBound$.\\
+
+Specifically, the functions $upperBound$ and $lowerBound$, take in as arguments the dimension of the matrix, the total number of threads created in main, as well as the 'threadID' of a particular thread. In both functions an integer variable "binSize" is determined by using the formula: \[binSize=matrixDimension/numberOfThreads\] This determines an upper and lower bin of elements (alternatively stated, two sets of values, each containing a particular number of elements in the matrix ) that will be transposed using the $transposeMatrix$ function.\\ 
+
+Each thread will operate on an upper and lower bin of elements, until each subsection of the matrix has been correctly transposed, resulting in the entire matrix to be transposed. The threads are then iteratively joined back into the main thread and the final transposed matrix is printed out.  
+%	\begin{figure}[hbtp!]
+%		\centering
+%		\includegraphics[scale = 1]{code.png}
+%		\caption{Excerpt code}
+%		\label {code}
+%	\end{figure}
+
+	%The result of Figure~\ref{code} is then multiplied with the array that 
+
+\section{Comparison}
+
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[H]
+\centering
+\caption{Comparison of Different Methods}
+\label{my-label}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\multicolumn{2}{|l|}{\multirow{2}{*}{}} & \multicolumn{3}{l|}{Array Sizes} \\ \cline{3-5} 
+\multicolumn{2}{|l|}{}                  & 128      & 1024      & 8192      \\ \hline
+                     & No. of Threads   & \multicolumn{3}{l|}{Times}       \\ \hline
+Linear               & 1                &          &           &           \\ \hline
+Pthread              & 4                &          &           &           \\ \hline
+\multirow{4}{*}{}    & 8                &          &           &           \\ \cline{2-5} 
+                     & 16               &          &           &           \\ \cline{2-5} 
+                     & 64               &          &           &           \\ \cline{2-5} 
+                     & 128              &          &           &           \\ \hline
+OpenMP               & 4                &          &           &           \\ \hline
+\multirow{4}{*}{}    & 8                &          &           &           \\ \cline{2-5} 
+                     & 16               &          &           &           \\ \cline{2-5} 
+                     & 64               &          &           &           \\ \cline{2-5} 
+                     & 128              &          &           &           \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Conclusion}
+	
+\end{document}
