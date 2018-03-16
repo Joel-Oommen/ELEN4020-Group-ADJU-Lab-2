@@ -107,17 +107,17 @@ Each thread will operate on an upper and lower bin of elements, until each subse
 \multicolumn{2}{|l|}{\multirow{2}{*}{}} & \multicolumn{3}{l|}{Array Sizes} \\ \cline{3-5} 
 \multicolumn{2}{|l|}{}                  & 128      & 1024      & 8192      \\ \hline
                      & No. of Threads   & \multicolumn{3}{l|}{Times}       \\ \hline
-Linear               & 1                &          &           &           \\ \hline
-Pthread              & 4                &          &           &           \\ \hline
-\multirow{4}{*}{}    & 8                &          &           &           \\ \cline{2-5} 
-                     & 16               &          &           &           \\ \cline{2-5} 
-                     & 64               &          &           &           \\ \cline{2-5} 
-                     & 128              &          &           &           \\ \hline
-OpenMP               & 4                &          &           &           \\ \hline
-\multirow{4}{*}{}    & 8                &          &           &           \\ \cline{2-5} 
-                     & 16               &          &           &           \\ \cline{2-5} 
-                     & 64               &          &           &           \\ \cline{2-5} 
-                     & 128              &          &           &           \\ \hline
+Linear               & 1                &     0.000164     &       0.012435    &       1.352024    \\ \hline
+Pthread              & 4                &    1.023914      &      1.020149     &    1.011761      \\ \hline
+\multirow{4}{*}{}    & 8                &   1.002465     &    1.034782       &  1.032099         \\ \cline{2-5} 
+                     & 16               &   1.008585      &      1.014240     &    1.035444       \\ \cline{2-5} 
+                     & 64               &    1.016753     &    1.032005       &     1.015308      \\ \cline{2-5} 
+                     & 128              &   1.007373       &   1.023784        &   1.006293         \\ \hline
+OpenMP               & 4                &  0.000242        &      0.012308     &     0.611911      \\ \hline
+\multirow{4}{*}{}    & 8                &   0.000231       &    0.005163       &   0.848804        \\ \cline{2-5} 
+                     & 16               &  0.000246          &    0.004093       &    0.914388       \\ \cline{2-5} 
+                     & 64               &     0.000898     &     0.004692      &     0.941297      \\ \cline{2-5} 
+                     & 128              &   0.001017       &    0.005042       &     0.925575      \\ \hline
 \end{tabular}
 \end{table}
 
