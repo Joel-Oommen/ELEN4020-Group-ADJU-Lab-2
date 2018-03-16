@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.27)  16 MAR 2018 08:37
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.8.27)  16 MAR 2018 09:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1518,31 +1518,58 @@ Underfull \hbox (badness 10000) in paragraph at lines 83--84
 
  []
 
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 105.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 105.
+
+Underfull \hbox (badness 1810) in paragraph at lines 103--104
+[]\OT1/ptm/m/n/10 For the sake of com-par-ing the per-for-mance of the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 103--104
+
+ []
+
 [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 ]
-[2
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
 
-] (./Lab2.aux) ) 
+ []
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 111.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 111.
+
+Underfull \hbox (badness 1460) in paragraph at lines 129--130
+[]\OT1/ptm/m/n/10 From the re-sults in Ta-ble 1, it is ev-i-dent that the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 129--130
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 133--134
+
+ []
+
+[2] (./Lab2.aux) ) 
 Here is how much of TeX's memory you used:
  33427 strings out of 493014
  769463 string characters out of 6133351
- 888853 words of memory out of 5000000
+ 891853 words of memory out of 5000000
  36555 multiletter control sequences out of 15000+600000
  36050 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,10n,67p,10359b,519s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc
-}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
-</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/
-texlive/2016/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Lab2.pdf (2 pages, 56314 bytes).
+ 62i,10n,67p,10359b,517s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.e
+nc}</usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pf
+b></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
+</usr/local/texlive/2016/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/loca
+l/texlive/2016/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Lab2.pdf (2 pages, 59331 bytes).
 PDF statistics:
  31 PDF objects out of 1000 (max. 8388607)
  22 compressed objects within 1 object stream

@@ -92,12 +92,18 @@ Each thread will operate on an upper and lower bin of elements, until each subse
 
 	%The result of Figure~\ref{code} is then multiplied with the array that 
 
-\section{Comparison}
+\section{Results and Analysis}
 
 % Please add the following required packages to your document preamble:
 % \usepackage{multirow}
 % Please add the following required packages to your document preamble:
 % \usepackage{multirow}
+
+
+For the sake of comparing the performance of the algorithms using OpenMP and PThread, both algorithms have been implemented using the same logic (namely swapping the top half of the matrix above the main diagonal, with the lower half of the matrix). The time each algorithm takes to perform the transposition, is measured using OMP’s $wtime( )$ functionality (due to its accuracy in measuring the time). \\
+
+To have a baseline of times values, which can be used to gauge the performance of the two parallel algorithms, a typical single thread (/linear) algorithm for matrix transposition has been run for each square matrix (with dimensions $No$= $128,$ $1024$ and $8192$). The results of these times can be seen in Table 1. \\
+
 \begin{table}[H]
 \centering
 \caption{Comparison of Different Methods}
@@ -120,7 +126,17 @@ OpenMP               & 4                &  0.000242        &      0.012308     &
                      & 128              &   0.001017       &    0.005042       &     0.925575      \\ \hline
 \end{tabular}
 \end{table}
+From the results in Table 1, it is evident that the implementation of the PThread algorithm takes longer to transpose square matrices of size $No$=$128$ and $1024$, than the single-thread algorithm (even when the PThreads are increased). However, for the square matrix with $No$=$8192$, the PThread algorithm performed marginally quicker than the single-thread algorithm.\\
+
+ 
+
+However, it is evident that the OpenMP implementation is significantly faster than the PThread implementation. For square matrices with dimension $No$=$128$ and $1024$, it is evident that when 4 threads are used, that the single-thread implementation and the OpenMP implementation have similar performances; however, as the threads increase, the parallel operations of OpenMP significantly improve the performance of the time it takes to transpose the matrix. When a square matrix of size $No$=$8192$ is used, the OpenMP algorithm is performs more quickly than the single-thread algorithm. \\
+
+From the above results, it is evident that the implementation of the PThread algorithm is not as efficient as the OpenMP algorithm. Clearly, the algorithm’s management of the threads causes the PThreads to perform slower in most instances than the single-thread algorithm, while the OpenMP’s in-built management of the threads, is significantly more efficient.
+
 
 \section{Conclusion}
 	
+
+In this lab, two parallel algorithms were implemented, using the OpenMP and PThread libraries, to transpose varying sizes of matrices, using varying number of threads. It is evident that the user’s management of the threads in the PThread implementation, is not as efficient as OpenMP’s own management of the threads, thus resulting in the OpenMP implementation being the fastest performing algorithm.
 \end{document}
